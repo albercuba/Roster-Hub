@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+    <h1>{% if process_type == 'onboarding' %}{{ t('requests.start_onboarding') }}{% else %}{{ t('requests.start_offboarding') }}{% endif %}</h1>
+    <form action="/portal/requests" method="post" class="stack-form">
+        <input type="hidden" name="process_type" value="{{ process_type }}" />
+        <label>{{ t('requests.employee_name') }}<input type="text" name="employee_name" required /></label>
+        <label>{{ t('requests.relevant_date') }}<input type="date" name="relevant_date" required /></label>
+        <label>{{ t('requests.notes') }}<textarea name="notes"></textarea></label>
+        {% for variable in variables %}
+        <label>
+            {{ variable.label }} {% if variable.required %}<span class="tag">{{ t('common.required') }}</span>{% endif %}
+            {% if variable.field_type == 'dropdown' %}
+            <select name="variable_{{ variable.id }}" {% if variable.required %}required{% endif %}>
+                <option value=""></option>
+                {% for option in variable.options or [] %}
+                <option value="{{ option }}">{{ option }}</option>
+                {% endfor %}
+            </select>
+            {% else %}
+            <input type="text" name="variable_{{ variable.id }}" {% if variable.required %}required{% endif %} />
+            {% endif %}
+            {% if variable.help_text %}<span class="muted">{{ variable.help_text }}</span>{% endif %}
+        </label>
+        {% endfor %}
+        <button class="button" type="submit">{% if process_type == 'onboarding' %}{{ t('requests.start_onboarding') }}{% else %}{{ t('requests.start_offboarding') }}{% endif %}</button>
+    </form>
+</section>
+{% endblock %}

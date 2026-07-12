@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+    <div class="form-actions">
+        <a class="button button-secondary" href="/admin/companies">{{ t('common.back') }}</a>
+    </div>
+    <h1>{{ company.name }}</h1>
+    <form action="/admin/companies/{{ company.id }}" method="post" class="grid-form two">
+        <label>{{ t('companies.name') }}<input type="text" name="name" value="{{ company.name }}" required /></label>
+        <label>{{ t('companies.notification_email') }}<input type="email" name="notification_email" value="{{ company.notification_email or '' }}" /></label>
+        <label class="full-span">{{ t('companies.notes') }}<textarea name="notes">{{ company.notes or '' }}</textarea></label>
+        <div class="form-actions">
+            <button class="button" type="submit">{{ t('common.save') }}</button>
+        </div>
+    </form>
+    <form action="/admin/companies/{{ company.id }}/delete" method="post" class="form-actions"></form>
+        <button class="button-secondary" type="submit">{{ t('common.delete') }}</button>
+    </form>
+</section>
+<section class="split">
+    <section class="panel">
+        <h2>{{ t('variables.title') }}</h2>
+        <form action="/admin/companies/{{ company.id }}/variables" method="post" class="stack-form">
+            <label>{{ t('variables.label') }}<input type="text" name="label" required /></label>
+            <label>{{ t('variables.field_type') }}
+                <select name="field_type">
+                    <option value="text">{{ t('variables.field_type.text') }}</option>
+                    <option value="dropdown">{{ t('variables.field_type.dropdown') }}</option>
+                </select>
+            </label>
+            <label>{{ t('variables.options') }}<textarea name="options_text"></textarea></label>
+            <label>{{ t('variables.help_text') }}<textarea name="help_text"></textarea></label>
+            <label>{{ t('variables.applies_to') }}
+                <select name="applies_to">
+                    <option value="both">{{ t('variables.applies_to.both') }}</option>
+                    <option value="onboarding">{{ t('variables.applies_to.onboarding') }}</option>
+                    <option value="offboarding">{{ t('variables.applies_to.offboarding') }}</option>
+                </select>
+            </label>
+            <label>{{ t('variables.sort_order') }}<input type="number" name="sort_order" value="0" /></label>
+            <label><input type="checkbox" name="required" value="true" /> {{ t('variables.required') }}</label>
+            <button class="button" type="submit">{{ t('common.create') }}</button>
+        </form>
+        <div class="list-stack">
+            {% for variable in company.variables|sort(attribute='sort_order') %}
+            <div class="card-row">
+                <form action="/admin/variables/{{ variable.id }}" method="post" class="stack-form">
+                    <label>{{ t('variables.label') }}<input type="text" name="label" value="{{ variable.label }}" required /></label>
+                    <label>{{ t('variables.field_type') }}
+                        <select name="field_type">
+                            <option value="text" {% if variable.field_type == 'text' %}selected{% endif %}>{{ t('variables.field_type.text') }}</option>
+                            <option value="dropdown" {% if variable.field_type == 'dropdown' %}selected{% endif %}>{{ t('variables.field_type.dropdown') }}</option>
+                        </select>
+                    </label>
+                    <label>{{ t('variables.options') }}<textarea name="options_text">{{ (variable.options or [])|join('\n') }}</textarea></label>
+                    <label>{{ t('variables.help_text') }}<textarea name="help_text">{{ variable.help_text or '' }}</textarea></label>
+                    <label>{{ t('variables.applies_to') }}
+                        <select name="applies_to">
+                            <option value="both" {% if variable.applies_to == 'both' %}selected{% endif %}>{{ t('variables.applies_to.both') }}</option>
+                            <option value="onboarding" {% if variable.applies_to == 'onboarding' %}selected{% endif %}>{{ t('variables.applies_to.onboarding') }}</option>
+                            <option value="offboarding" {% if variable.applies_to == 'offboarding' %}selected{% endif %}>{{ t('variables.applies_to.offboarding') }}</option>
+                        </select>
+                    </label>
+                    <label>{{ t('variables.sort_order') }}<input type="number" name="sort_order" value="{{ variable.sort_order }}" /></label>
+                    <label><input type="checkbox" name="required" value="true" {% if variable.required %}checked{% endif %}/> {{ t('variables.required') }}</label>
+                    <div class="form-actions">
+                        <button class="button" type="submit">{{ t('common.save') }}</button>
+                    </div>
+                </form>
+                <form action="/admin/variables/{{ variable.id }}/delete" method="post"></form>
+                    <button class="button-secondary" type="submit">{{ t('common.delete') }}</button>
+                </form>
+            </div>
+            {% else %}
+            <div class="card-row">{{ t('variables.empty') }}</div>
+            {% endfor %}
+        </div>
+    </section>
+    <section class="panel">
+        <h2>{{ t('companies.contact_users') }}</h2>
+        <div class="list-stack">
+            {% for item in company.users %}
+            <div class="card-row">
+                <strong>{{ item.email }}</strong>
+                <span class="tag">{{ t('roles.' ~ item.role) }}</span>
+            </div>
+            {% else %}
+            <div class="card-row">{{ t('users.empty') }}</div>
+            {% endfor %}
+        </div>
+        <h2>{{ t('companies.requests') }}</h2>
+        <div class="list-stack">
+            {% for req in company.requests|sort(attribute='created_at', reverse=True) %}
+            <div class="card-row">
+                <strong>{{ req.employee_name }}</strong>
+                <span>{{ t('requests.process_type.' ~ req.process_type) }} · {{ t('requests.status.' ~ req.status) }}</span>
+            </div>
+            {% else %}
+            <div class="card-row">{{ t('requests.empty') }}</div>
+            {% endfor %}
+        </div>
+    </section>
+</section>
+{% endblock %}

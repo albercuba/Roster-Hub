@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="{{ lang.code|lower }}">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{{ t('app.name') }}</title>
+        <script>
+            (() => {
+                const root = document.documentElement;
+                const storedTheme = window.localStorage.getItem('roster-hub-theme');
+                const preferredDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const theme = storedTheme === 'dark' || storedTheme === 'light' ? storedTheme : (preferredDark ? 'dark' : 'light');
+                root.dataset.theme = theme;
+            })();
+        </script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+        <link rel="stylesheet" href="/static/style.css" />
+    </head>
+    <body>
+        <header class="topbar">
+            <div class="brand">
+                <span class="brand-mark"><i class="fa-solid fa-users-line"></i></span>
+                <div>
+                    <div class="brand-title">{{ t('app.name') }}</div>
+                    <div class="brand-subtitle">{{ t('app.tagline') }}</div>
+                </div>
+            </div>
+            <div class="topbar-actions">
+                <form action="/preferences/theme" method="post" class="inline-form">
+                    <select name="theme" class="select" onchange="this.form.submit()">
+                        <option value="light" {% if theme == 'light' %}selected{% endif %}>{{ t('theme.light') }}</option>
+                        <option value="dark" {% if theme == 'dark' %}selected{% endif %}>{{ t('theme.dark') }}</option>
+                    </select>
+                </form>
+                <form action="/preferences/language" method="post" class="inline-form">
+                    <select name="language_code" class="select" onchange="this.form.submit()">
+                        {% for option in language_options %}
+                        <option value="{{ option.code }}" {% if option.code == lang.code %}selected{% endif %}>{{ option.display_name }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+                {% if user %}
+                <span class="user-chip"><i class="fa-solid fa-user"></i> {{ user.email }}</span>
+                <form action="/logout" method="post">
+                    <button class="link-button" type="submit">{{ t('nav.logout') }}</button>
+                </form>
+                {% endif %}
+            </div>
+        </header>
+        <div class="layout">
+            {% if user %}
+            <aside class="sidebar">
+                {% if user.role == 'admin' %}
+                <a class="nav-link {% if active_page == 'dashboard' %}active{% endif %}" href="/dashboard">{{ t('nav.dashboard') }}</a>
+                <a class="nav-link {% if active_page == 'companies' %}active{% endif %}" href="/admin/companies">{{ t('nav.companies') }}</a>
+                <a class="nav-link {% if active_page == 'users' %}active{% endif %}" href="/admin/users">{{ t('nav.users') }}</a>
+                <a class="nav-link {% if active_page == 'requests' %}active{% endif %}" href="/admin/requests">{{ t('nav.requests') }}</a>
+                <a class="nav-link {% if active_page == 'email_settings' %}active{% endif %}" href="/admin/settings/email">{{ t('nav.email_settings') }}</a>
+                <a class="nav-link {% if active_page == 'languages' %}active{% endif %}" href="/admin/languages">{{ t('nav.languages') }}</a>
+                {% else %}
+                <a class="nav-link {% if active_page == 'client_portal' %}active{% endif %}" href="/portal">{{ t('nav.client_portal') }}</a>
+                <a class="nav-link {% if active_page == 'new_request' %}active{% endif %}" href="/portal/requests/new?process_type=onboarding">{{ t('nav.new_request') }}</a>
+                <a class="nav-link" href="/portal/requests/new?process_type=offboarding">{{ t('requests.process_type.offboarding') }}</a>
+                {% endif %}
+            </aside>
+            {% endif %}
+            <main class="shell">
+                {% if toast %}
+                <div class="alert alert-success">{{ t(toast) }}</div>
+                {% endif %}
+                {% if error_key %}
+                <div class="alert alert-danger">{{ t(error_key) }}</div>
+                {% endif %}
+                {% if error_message %}
+                <div class="alert alert-danger">{{ error_message }}</div>
+                {% endif %}
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+        <footer class="footer">{{ t('app.footer') }}</footer>
+        <script src="/static/app.js"></script>
+    </body>
+</html>

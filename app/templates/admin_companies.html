@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="split">
+    <section class="panel">
+        <h1>{{ t('companies.title') }}</h1>
+        <div class="list-stack">
+            {% for company in companies %}
+            <a class="card-row" href="/admin/companies/{{ company.id }}">
+                <strong>{{ company.name }}</strong>
+                <span class="muted">{{ company.notification_email or '-' }}</span>
+            </a>
+            {% else %}
+            <div class="card-row">{{ t('companies.empty') }}</div>
+            {% endfor %}
+        </div>
+    </section>
+    <section class="panel">
+        <h2>{{ t('companies.create') }}</h2>
+        <form action="/admin/companies" method="post" class="stack-form">
+            <label>{{ t('companies.name') }}<input type="text" name="name" required /></label>
+            <label>{{ t('companies.notification_email') }}<input type="email" name="notification_email" /></label>
+            <label>{{ t('companies.notes') }}<textarea name="notes"></textarea></label>
+            <button class="button" type="submit">{{ t('common.create') }}</button>
+        </form>
+    </section>
+</div>
+{% endblock %}

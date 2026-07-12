@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="split">
+    <section class="panel">
+        <h1>{{ t('users.title') }}</h1>
+        <div class="list-stack">
+            {% for item in users %}
+            <div class="card-row">
+                <form action="/admin/users/{{ item.id }}" method="post" class="stack-form">
+                    <label>{{ t('users.email') }}<input type="email" name="email" value="{{ item.email }}" required /></label>
+                    <label>{{ t('users.role') }}
+                        <select name="role">
+                            <option value="admin" {% if item.role == 'admin' %}selected{% endif %}>{{ t('roles.admin') }}</option>
+                            <option value="client_contact" {% if item.role == 'client_contact' %}selected{% endif %}>{{ t('roles.client_contact') }}</option>
+                        </select>
+                    </label>
+                    <label>{{ t('users.company') }}
+                        <select name="company_id">
+                            <option value=""></option>
+                            {% for company in companies %}
+                            <option value="{{ company.id }}" {% if item.company_id == company.id %}selected{% endif %}>{{ company.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label>{{ t('users.language_preference') }}<input type="text" name="language_preference" value="{{ item.language_preference }}" /></label>
+                    <label>{{ t('users.password') }}<input type="password" name="password" /></label>
+                    <div class="form-actions">
+                        <button class="button" type="submit">{{ t('common.save') }}</button>
+                    </div>
+                </form>
+                <form action="/admin/users/{{ item.id }}/delete" method="post"></form>
+                    <button class="button-secondary" type="submit">{{ t('common.delete') }}</button>
+                </form>
+            </div>
+            {% else %}
+            <div class="card-row">{{ t('users.empty') }}</div>
+            {% endfor %}
+        </div>
+    </section>
+    <section class="panel">
+        <h2>{{ t('users.create') }}</h2>
+        <form action="/admin/users" method="post" class="stack-form">
+            <label>{{ t('users.email') }}<input type="email" name="email" required /></label>
+            <label>{{ t('users.password') }}<input type="password" name="password" required /></label>
+            <label>{{ t('users.role') }}
+                <select name="role">
+                    <option value="admin">{{ t('roles.admin') }}</option>
+                    <option value="client_contact">{{ t('roles.client_contact') }}</option>
+                </select>
+            </label>
+            <label>{{ t('users.company') }}
+                <select name="company_id">
+                    <option value=""></option>
+                    {% for company in companies %}
+                    <option value="{{ company.id }}">{{ company.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>{{ t('users.language_preference') }}<input type="text" name="language_preference" value="EN" /></label>
+            <button class="button" type="submit">{{ t('common.create') }}</button>
+        </form>
+    </section>
+</div>
+{% endblock %}

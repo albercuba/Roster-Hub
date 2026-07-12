@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="split">
+    <section class="panel">
+        <h1>{{ t('languages.title') }}</h1>
+        <div class="form-actions">
+            <a class="button button-secondary" href="/admin/languages/template">{{ t('languages.download_template') }}</a>
+        </div>
+        <div class="list-stack">
+            {% for item in languages %}
+            <div class="card-row">
+                <strong>{{ item.display_name }}</strong>
+                <span class="tag">{{ item.code }}</span>
+                <a class="link-button" href="/admin/languages/{{ item.code }}">{{ t('common.download') }}</a>
+            </div>
+            {% else %}
+            <div class="card-row">{{ t('languages.available') }}</div>
+            {% endfor %}
+        </div>
+        {% if warnings %}
+        <div class="alert alert-success">{{ t('languages.untranslated_keys') }}: {{ warnings }}</div>
+        {% endif %}
+        {% if missing_keys %}
+        <div class="alert alert-danger">{{ t('languages.missing_keys') }}: {{ missing_keys|join(', ') }}</div>
+        {% endif %}
+        {% if untranslated_keys %}
+        <div class="alert alert-success">{{ t('languages.untranslated_keys') }}: {{ untranslated_keys|join(', ') }}</div>
+        {% endif %}
+    </section>
+    <section class="panel">
+        <h2>{{ t('languages.upload') }}</h2>
+        <form action="/admin/languages/upload" method="post" enctype="multipart/form-data" class="stack-form">
+            <label>{{ t('languages.file') }}<input type="file" name="language_file" accept="application/json,.json" required /></label>
+            <button class="button" type="submit">{{ t('common.upload') }}</button>
+        </form>
+    </section>
+</div>
+{% endblock %}

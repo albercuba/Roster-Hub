@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+    <h1>{{ t('dashboard.client_title') }}</h1>
+    <div class="form-actions">
+        <a class="button" href="/portal/requests/new?process_type=onboarding">{{ t('requests.start_onboarding') }}</a>
+        <a class="button button-secondary" href="/portal/requests/new?process_type=offboarding">{{ t('requests.start_offboarding') }}</a>
+    </div>
+</section>
+<section class="panel">
+    <h2>{{ t('requests.history') }}</h2>
+    <div class="list-stack">
+        {% for item in requests_list %}
+        <a class="card-row" href="/portal/requests/{{ item.id }}">
+            <strong>{{ item.employee_name }}</strong>
+            <span>{{ t('requests.process_type.' ~ item.process_type) }} · {{ t('requests.status.' ~ item.status) }}</span>
+            <span class="muted">{{ item.relevant_date }}</span>
+        </a>
+        {% else %}
+        <div class="card-row">{{ t('requests.empty') }}</div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

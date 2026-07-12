@@ -1,0 +1,29 @@
+services:
+  roster-hub-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: rosterhub
+      POSTGRES_USER: rosterhub
+      POSTGRES_PASSWORD: rosterhub
+    volumes:
+      - roster_hub_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rosterhub -d rosterhub"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  roster-hub-app:
+    build: .
+    env_file: .env
+    depends_on:
+      roster-hub-db:
+        condition: service_healthy
+    ports:
+      - "8084:8084"
+    volumes:
+      - roster_hub_languages:/var/lib/roster-hub/languages
+
+volumes:
+  roster_hub_db:
+  roster_hub_languages:

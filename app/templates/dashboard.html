@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero-grid">
+    <div class="panel stat-panel"><span class="muted">{{ t('nav.companies') }}</span><strong>{{ total_companies }}</strong></div>
+    <div class="panel stat-panel"><span class="muted">{{ t('nav.users') }}</span><strong>{{ total_users }}</strong></div>
+    <div class="panel stat-panel"><span class="muted">{{ t('requests.status.submitted') }}</span><strong>{{ request_counts.submitted }}</strong></div>
+    <div class="panel stat-panel"><span class="muted">{{ t('requests.status.in_progress') }}</span><strong>{{ request_counts.in_progress }}</strong></div>
+    <div class="panel stat-panel"><span class="muted">{{ t('requests.status.completed') }}</span><strong>{{ request_counts.completed }}</strong></div>
+</section>
+<section class="panel">
+    <h2>{{ t('dashboard.recent_requests') }}</h2>
+    <table class="table">
+        <thead><tr><th>{{ t('common.company') }}</th><th>{{ t('requests.employee_name') }}</th><th>{{ t('requests.process_type') }}</th><th>{{ t('common.status') }}</th></tr></thead>
+        <tbody>
+            {% for item in recent_requests %}
+            <tr>
+                <td>{{ item.company.name }}</td>
+                <td>{{ item.employee_name }}</td>
+                <td>{{ t('requests.process_type.' ~ item.process_type) }}</td>
+                <td>{{ t('requests.status.' ~ item.status) }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4">{{ t('requests.empty') }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

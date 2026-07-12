@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+    <h1>{{ t('requests.title') }}</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>{{ t('requests.company') }}</th>
+                <th>{{ t('requests.employee_name') }}</th>
+                <th>{{ t('requests.process_type') }}</th>
+                <th>{{ t('requests.created_by') }}</th>
+                <th>{{ t('common.status') }}</th>
+                <th>{{ t('common.actions') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in requests_list %}
+            <tr>
+                <td>{{ item.company.name }}</td>
+                <td>{{ item.employee_name }}</td>
+                <td>{{ t('requests.process_type.' ~ item.process_type) }}</td>
+                <td>{{ item.created_by_user.email }}</td>
+                <td>{{ t('requests.status.' ~ item.status) }}</td>
+                <td>
+                    <form action="/admin/requests/{{ item.id }}/status" method="post" class="inline-form">
+                        <select name="status">
+                            <option value="submitted" {% if item.status == 'submitted' %}selected{% endif %}>{{ t('requests.status.submitted') }}</option>
+                            <option value="in_progress" {% if item.status == 'in_progress' %}selected{% endif %}>{{ t('requests.status.in_progress') }}</option>
+                            <option value="completed" {% if item.status == 'completed' %}selected{% endif %}>{{ t('requests.status.completed') }}</option>
+                        </select>
+                        <button class="button" type="submit">{{ t('common.update') }}</button>
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <div class="code-block">
+                        {% for value in item.variable_values %}
+                        {{ value.company_variable.label }}: {{ value.value or '-' }}
+                        {% else %}
+                        {{ t('requests.variable_values') }}: -
+                        {% endfor %}
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6">{{ t('requests.empty') }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

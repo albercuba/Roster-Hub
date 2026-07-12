@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+    <h1>{{ t('email.title') }}</h1>
+    <form action="/admin/settings/email" method="post" class="grid-form two">
+        <label><input type="checkbox" name="smtp_enabled" value="true" {% if settings_record and settings_record.smtp_enabled %}checked{% endif %}/> {{ t('email.smtp_enabled') }}</label>
+        <label><input type="checkbox" name="smtp_use_tls" value="true" {% if settings_record and settings_record.smtp_use_tls %}checked{% endif %}/> {{ t('email.smtp_use_tls') }}</label>
+        <label><input type="checkbox" name="smtp_use_ssl" value="true" {% if settings_record and settings_record.smtp_use_ssl %}checked{% endif %}/> {{ t('email.smtp_use_ssl') }}</label>
+        <div></div>
+        <label>{{ t('email.smtp_host') }}<input type="text" name="smtp_host" value="{{ settings_record.smtp_host if settings_record else '' }}" /></label>
+        <label>{{ t('email.smtp_port') }}<input type="number" name="smtp_port" value="{{ settings_record.smtp_port if settings_record else 587 }}" /></label>
+        <label>{{ t('email.smtp_username') }}<input type="text" name="smtp_username" value="{{ settings_record.smtp_username if settings_record else '' }}" /></label>
+        <label>{{ t('email.smtp_password') }}<input type="password" name="smtp_password" value="{{ settings_record.smtp_password if settings_record else '' }}" /></label>
+        <label>{{ t('email.smtp_from_address') }}<input type="email" name="smtp_from_address" value="{{ settings_record.smtp_from_address if settings_record else '' }}" /></label>
+        <label>{{ t('email.smtp_from_name') }}<input type="text" name="smtp_from_name" value="{{ settings_record.smtp_from_name if settings_record else '' }}" /></label>
+        <div class="form-actions"><button class="button" type="submit">{{ t('common.save') }}</button></div>
+    </form>
+</section>
+{% endblock %}

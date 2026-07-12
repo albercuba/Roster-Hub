@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="panel auth-panel">
+    <h1>{{ t('auth.title') }}</h1>
+    <p class="muted">{{ t('auth.subtitle') }}</p>
+    <form action="/login" method="post" class="stack-form">
+        <label>{{ t('auth.email') }}<input type="email" name="email" value="{{ entered_email or '' }}" required /></label>
+        <label>{{ t('auth.password') }}<input type="password" name="password" required /></label>
+        <button class="button" type="submit">{{ t('auth.login') }}</button>
+    </form>
+</div>
+{% endblock %}

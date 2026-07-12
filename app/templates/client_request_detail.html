@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+    <div class="form-actions"><a class="button button-secondary" href="/portal">{{ t('common.back') }}</a></div>
+    <h1>{{ request_record.employee_name }}</h1>
+    <p>{{ t('requests.process_type.' ~ request_record.process_type) }} · {{ t('requests.status.' ~ request_record.status) }}</p>
+    <p>{{ t('requests.relevant_date') }}: {{ request_record.relevant_date }}</p>
+    <p>{{ t('requests.notes') }}: {{ request_record.notes or '-' }}</p>
+</section>
+<section class="panel">
+    <h2>{{ t('requests.variable_values') }}</h2>
+    <div class="list-stack">
+        {% for item in request_record.variable_values %}
+        <div class="card-row"><strong>{{ item.company_variable.label }}</strong><span>{{ item.value or '-' }}</span></div>
+        {% else %}
+        <div class="card-row">-</div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
