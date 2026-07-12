@@ -282,7 +282,7 @@ def update_request_status(
 @router.get("/settings/email")
 def email_settings_page(request: Request, db: Session = Depends(get_db), user: User = Depends(require_admin)):
     settings_record = db.get(EmailSettings, 1)
-    return render_template(request, "admin_email_settings.html", {"user": user, "active_page": "email_settings", "settings_record": settings_record, "toast": request.query_params.get("toast")}, user=user)
+    return render_template(request, "admin_email_settings.html", {"user": user, "active_page": "settings", "active_settings": "email_settings", "settings_record": settings_record, "toast": request.query_params.get("toast")}, user=user)
 
 
 @router.post("/settings/email")
@@ -319,7 +319,7 @@ def update_email_settings(
 
 @router.get("/languages")
 def languages_page(request: Request, user: User = Depends(require_admin)):
-    return render_template(request, "admin_languages.html", {"user": user, "active_page": "languages", "languages": list_languages(), "toast": request.query_params.get("toast"), "warnings": request.query_params.get("warnings", "")}, user=user)
+    return render_template(request, "admin_languages.html", {"user": user, "active_page": "settings", "active_settings": "languages", "languages": list_languages(), "toast": request.query_params.get("toast"), "warnings": request.query_params.get("warnings", "")}, user=user)
 
 
 @router.post("/languages/upload")
@@ -337,7 +337,8 @@ def upload_language(
             "admin_languages.html",
             {
                 "user": user,
-                "active_page": "languages",
+                "active_page": "settings",
+                "active_settings": "languages",
                 "languages": list_languages(),
                 "error_message": str(exc),
                 "missing_keys": exc.missing_keys,
