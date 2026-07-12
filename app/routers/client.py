@@ -28,23 +28,6 @@ def portal_home(request: Request, db: Session = Depends(get_db), user: User = De
     return render_template(request, "client_portal.html", {"user": user, "active_page": "client_portal", "requests_list": requests_list, "toast": request.query_params.get("toast")}, user=user)
 
 
-@router.get("/requests/{request_id}")
-def request_detail(request_id: str, request: Request, db: Session = Depends(get_db), user: User = Depends(require_client_contact)):
-    request_record = db.scalar(
-        select(RequestModel)
-        .options(
-            selectinload(RequestModel.company),
-            selectinload(RequestModel.created_by_user),
-            selectinload(RequestModel.variable_values).selectinload(RequestVariableValue.company_variable),
-        )
-        .where(RequestModel.id == request_id)
-    )
-    if not request_record:
-        raise HTTPException(status_code=404, detail="Request not found")
-    ensure_request_access(user, request_record)
-    return render_template(request, "client_request_detail.html", {"user": user, "active_page": "client_portal", "request_record": request_record}, user=user)
-
-
 @router.get("/requests/new")
 def new_request_page(
     request: Request,
@@ -61,6 +44,23 @@ def new_request_page(
     ).all()
     filtered = [item for item in variables if item.applies_to in {"both", process_type}]
     return render_template(request, "client_request_form.html", {"user": user, "active_page": "new_request", "process_type": process_type, "variables": filtered, "toast": request.query_params.get("toast")}, user=user)
+
+
+@router.get("/requests/{request_id}")
+def request_detail(request_id: str, request: Request, db: Session = Depends(get_db), user: User = Depends(require_client_contact)):
+    request_record = db.scalar(
+        select(RequestModel)
+        .options(
+            selectinload(RequestModel.company),
+            selectinload(RequestModel.created_by_user),
+            selectinload(RequestModel.variable_values).selectinload(RequestVariableValue.company_variable),
+        )
+        .where(RequestModel.id == request_id)
+    )
+    if not request_record:
+        raise HTTPException(status_code=404, detail="Request not found")
+    ensure_request_access(user, request_record)
+    return render_template(request, "client_request_detail.html", {"user": user, "active_page": "client_portal", "request_record": request_record}, user=user)
 
 
 @router.post("/requests")

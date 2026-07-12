@@ -5,6 +5,24 @@ from app.security import hash_password
 from tests.conftest import login
 
 
+def test_start_onboarding_page_renders_form(client):
+    test_client, SessionLocal, _ = client
+    with SessionLocal() as db:
+        company = Company(name="Acme", notification_email="it@acme.example")
+        db.add(company)
+        db.flush()
+        user = User(email="contact@acme.example", password_hash=hash_password("pass123"), role="client_contact", company_id=company.id)
+        db.add(user)
+        db.commit()
+
+    login(test_client, "contact@acme.example", "pass123")
+    response = test_client.get("/portal/requests/new?process_type=onboarding")
+
+    assert response.status_code == 200
+    assert "Start onboarding" in response.text
+    assert "employee_name" in response.text
+
+
 def test_request_submission_saves_request_and_triggers_email(client, monkeypatch):
     test_client, SessionLocal, _ = client
     with SessionLocal() as db:
