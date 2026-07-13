@@ -46,8 +46,7 @@ def ensure_language_storage_seeded() -> None:
     storage = _storage_dir()
     for source in BASE_LANG_DIR.glob("*.json"):
         target = storage / source.name
-        if not target.exists():
-            shutil.copy2(source, target)
+        shutil.copy2(source, target)
 
 
 def _load_json(path: Path) -> dict:
