@@ -279,6 +279,11 @@ def update_request_status(
     return _redirect("/admin/requests", "requests.status_updated")
 
 
+@router.get("/settings/microsoft-365")
+def microsoft_365_settings_page(request: Request, user: User = Depends(require_admin)):
+    return render_template(request, "admin_microsoft_365_settings.html", {"user": user, "active_page": "settings", "active_settings": "microsoft_365", "toast": request.query_params.get("toast")}, user=user)
+
+
 @router.get("/settings/email")
 def email_settings_page(request: Request, db: Session = Depends(get_db), user: User = Depends(require_admin)):
     settings_record = db.get(EmailSettings, 1)
@@ -315,6 +320,11 @@ def update_email_settings(
     write_audit_log(db, user=user, action="email_settings.update", target_type="email_settings", target_id="1")
     db.commit()
     return _redirect("/admin/settings/email", "email.saved")
+
+
+@router.get("/settings/branding")
+def branding_settings_page(request: Request, user: User = Depends(require_admin)):
+    return render_template(request, "admin_branding.html", {"user": user, "active_page": "settings", "active_settings": "branding", "toast": request.query_params.get("toast")}, user=user)
 
 
 @router.get("/languages")
