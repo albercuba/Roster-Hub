@@ -36,17 +36,29 @@
                         <i class="fa-solid fa-moon theme-icon theme-icon-moon" aria-hidden="true"></i>
                     </button>
                 </form>
-                <form action="/preferences/language" method="post" class="inline-form topbar-select-form">
-                    <div class="topbar-language-control" aria-label="{{ t('nav.language') }}" title="{{ t('nav.language') }}">
+                <details class="topbar-language-menu">
+                    <summary class="topbar-language-control" aria-label="{{ t('nav.language') }}" title="{{ t('nav.language') }}">
                         <span class="topbar-language-icon" aria-hidden="true"><i class="fa-solid fa-globe"></i></span>
-                        <select name="language_code" class="topbar-language-select" onchange="this.form.submit()" aria-label="{{ t('nav.language') }}">
-                            {% for option in language_options %}
-                            <option value="{{ option.code }}" {% if option.code == lang.code %}selected{% endif %}>{{ option.code }}</option>
-                            {% endfor %}
-                        </select>
+                        <span class="topbar-language-code">{{ lang.code }}</span>
                         <span class="topbar-language-caret" aria-hidden="true"><i class="fa-solid fa-chevron-down"></i></span>
+                    </summary>
+                    <div class="topbar-language-dropdown">
+                        {% for option in language_options %}
+                        <form action="/preferences/language" method="post" class="inline-form">
+                            <button
+                                class="topbar-language-option{% if option.code == lang.code %} active{% endif %}"
+                                type="submit"
+                                name="language_code"
+                                value="{{ option.code }}"
+                                {% if option.code == lang.code %}disabled{% endif %}
+                            >
+                                <span class="topbar-language-option-code">{{ option.code }}</span>
+                                <span class="topbar-language-option-name">{{ option.display_name }}</span>
+                            </button>
+                        </form>
+                        {% endfor %}
                     </div>
-                </form>
+                </details>
                 {% if user %}
                 <span class="user-summary"><i class="fa-solid fa-user"></i> {{ user.email }}</span>
                 <form action="/logout" method="post">
