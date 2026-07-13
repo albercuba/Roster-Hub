@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <section class="panel">
-    <h1>{{ t('m365.title') }}</h1>
+    <h1>{{ t('nav.microsoft_365_integration') }}</h1>
     <p class="muted">{{ t('m365.summary') }}</p>
     <form action="/admin/settings/microsoft-365" method="post" class="grid-form two">
         <label class="checkbox-row full-span"><input type="checkbox" name="microsoft_enabled" value="true" {% if settings_record and settings_record.microsoft_enabled %}checked{% endif %}/> {{ t('m365.enabled') }}</label>
