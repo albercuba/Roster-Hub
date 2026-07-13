@@ -141,8 +141,7 @@ a {
     gap: 0.55rem;
     min-width: 5.25rem;
     padding: 0.55rem 0.85rem;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
+    border: 0px;
     background: var(--panel-strong);
     color: var(--muted);
     cursor: pointer;
