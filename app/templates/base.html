@@ -57,7 +57,7 @@
                 {% else %}
                 <details class="side-menu-group">
                 {% endif %}
-                    <summary class="side-menu-link {% if active_page == 'settings' %}active{% endif %}"><i class="fa-solid fa-gear"></i> {{ t('nav.settings') }}</summary>
+                    <summary class="side-menu-link {% if active_page == 'settings' %}active{% endif %}"><i class="fa-solid fa-gear"></i> Settings</summary>
                     <div class="side-menu-submenu">
                         <a class="side-menu-sublink {% if active_settings == 'email_settings' %}active{% endif %}" href="/admin/settings/email">{{ t('nav.email_settings') }}</a>
                         <a class="side-menu-sublink {% if active_settings == 'languages' %}active{% endif %}" href="/admin/languages">{{ t('nav.languages') }}</a>
