@@ -113,10 +113,11 @@ a {
 }
 .app-layout {
     display: grid;
-    grid-template-columns: 260px minmax(0, 1fr);
-    gap: 1.5rem;
-    width: min(1440px, calc(100% - 2rem));
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 0.75rem;
+    width: 100%;
     margin: 0 auto;
+    padding: 0 0.75rem;
     align-items: start;
 }
 .side-menu {
@@ -188,7 +189,7 @@ a {
 }
 .shell {
     width: 100%;
-    margin: 2rem auto;
+    margin: 0.75rem auto;
     min-width: 0;
     padding-left: 0.75rem;
     padding-right: 0.75rem;
@@ -356,11 +357,15 @@ button {
     }
     .app-layout {
         grid-template-columns: 1fr;
-        width: min(100%, calc(100% - 1rem));
+        padding: 0 0.5rem;
     }
     .side-menu {
         position: static;
         margin-top: 1rem;
+    }
+    .shell {
+        padding-left: 0;
+        padding-right: 0;
     }
     .grid-form.two,
     .split {
