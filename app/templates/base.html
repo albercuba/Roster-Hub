@@ -26,18 +26,14 @@
                 <form action="/preferences/theme" method="post" class="inline-form">
                     <input type="hidden" name="theme" value="light" data-theme-input />
                     <button
-                        class="theme-toggle"
+                        class="icon-button topbar-theme-button"
                         type="submit"
                         aria-label="{{ t('nav.theme') }}"
                         title="{{ t('nav.theme') }}"
                         data-theme-toggle
                     >
-                        <span class="theme-toggle-track" aria-hidden="true">
-                            <span class="theme-toggle-thumb">
-                                <i class="fa-solid fa-sun theme-toggle-icon theme-toggle-icon-sun"></i>
-                                <i class="fa-solid fa-moon theme-toggle-icon theme-toggle-icon-moon"></i>
-                            </span>
-                        </span>
+                        <i class="fa-solid fa-sun theme-icon theme-icon-sun" aria-hidden="true"></i>
+                        <i class="fa-solid fa-moon theme-icon theme-icon-moon" aria-hidden="true"></i>
                     </button>
                 </form>
                 <form action="/preferences/language" method="post" class="inline-form topbar-select-form">
