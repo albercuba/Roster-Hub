@@ -7,8 +7,10 @@
         <script>
             (() => {
                 const root = document.documentElement;
+                const storedTheme = window.localStorage.getItem('roster-hub-theme');
                 const preferredDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                root.dataset.theme = preferredDark ? 'dark' : 'light';
+                const theme = storedTheme === 'dark' || storedTheme === 'light' ? storedTheme : (preferredDark ? 'dark' : 'light');
+                root.dataset.theme = theme;
             })();
         </script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
@@ -21,6 +23,12 @@
                 {{ t('app.name') }}
             </div>
             <nav class="nav">
+                <form action="/preferences/theme" method="post" class="inline-form topbar-select-form">
+                    <select name="theme" class="select topbar-select" onchange="this.form.submit()" aria-label="{{ t('nav.theme') }}">
+                        <option value="light" {% if theme == 'light' %}selected{% endif %}>{{ t('theme.light') }}</option>
+                        <option value="dark" {% if theme == 'dark' %}selected{% endif %}>{{ t('theme.dark') }}</option>
+                    </select>
+                </form>
                 <form action="/preferences/language" method="post" class="inline-form topbar-select-form">
                     <select name="language_code" class="select topbar-select" onchange="this.form.submit()" aria-label="{{ t('nav.language') }}">
                         {% for option in language_options %}
@@ -76,5 +84,6 @@
             </main>
         </div>
         <footer class="footer">{{ t('app.footer') }}</footer>
+        <script src="/static/app.js"></script>
     </body>
 </html>
