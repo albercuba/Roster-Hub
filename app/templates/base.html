@@ -9,8 +9,11 @@
                 const root = document.documentElement;
                 const storedTheme = window.localStorage.getItem('roster-hub-theme');
                 const preferredDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                const theme = storedTheme === 'dark' || storedTheme === 'light' ? storedTheme : (preferredDark ? 'dark' : 'light');
+                const theme = storedTheme === 'dark' || storedTheme === 'light'
+                    ? storedTheme
+                    : (preferredDark ? 'dark' : 'light');
                 root.dataset.theme = theme;
+                root.dataset.density = 'compact';
             })();
         </script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
@@ -18,51 +21,53 @@
     </head>
     <body>
         <header class="topbar">
-            <div class="brand" title="{{ t('app.tagline') }}">
-                {% if brand_logo_url %}
-                <img class="brand-logo" src="{{ brand_logo_url }}" alt="{{ t('app.name') }} logo" />
-                {% else %}
-                <span class="brand-mark"><i class="fa-solid fa-users-line"></i></span>
+            <div class="topbar-leading">
+                {% if user %}
+                <button class="side-menu-toggle" type="button" data-side-menu-toggle aria-expanded="false" aria-controls="primary-side-menu" aria-label="Open navigation menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
                 {% endif %}
-                {{ t('app.name') }}
+                <div class="brand" title="{{ t('app.tagline') }}">
+                    {% if brand_logo_url %}
+                    <img class="brand-logo" src="{{ brand_logo_url }}" alt="{{ t('app.name') }} logo" />
+                    {% else %}
+                    <span class="brand-mark"><i class="fa-solid fa-users-line"></i></span>
+                    {% endif %}
+                    {{ t('app.name') }}
+                </div>
             </div>
             <nav class="nav">
-                <form action="/preferences/theme" method="post" class="inline-form">
-                    <input type="hidden" name="theme" value="light" data-theme-input />
-                    <button
-                        class="icon-button topbar-theme-button"
-                        type="submit"
-                        aria-label="{{ t('nav.theme') }}"
-                        title="{{ t('nav.theme') }}"
-                        data-theme-toggle
-                    >
-                        <i class="fa-solid fa-sun theme-icon theme-icon-sun" aria-hidden="true"></i>
-                        <i class="fa-solid fa-moon theme-icon theme-icon-moon" aria-hidden="true"></i>
-                    </button>
-                </form>
-                <details class="topbar-language-menu">
-                    <summary class="topbar-language-control" aria-label="{{ t('nav.language') }}" title="{{ t('nav.language') }}">
-                        <span class="topbar-language-icon" aria-hidden="true"><i class="fa-solid fa-globe"></i></span>
-                        <span class="topbar-language-code">{{ lang.code }}</span>
-                        <span class="topbar-language-caret" aria-hidden="true"><i class="fa-solid fa-chevron-down"></i></span>
-                    </summary>
-                    <div class="topbar-language-dropdown">
-                        {% for option in language_options %}
-                        <form action="/preferences/language" method="post" class="inline-form">
-                            <button
-                                class="topbar-language-option{% if option.code == lang.code %} active{% endif %}"
-                                type="submit"
-                                name="language_code"
-                                value="{{ option.code }}"
-                                {% if option.code == lang.code %}disabled{% endif %}
-                            >
-                                <span class="topbar-language-option-code">{{ option.code }}</span>
-                                <span class="topbar-language-option-name">{{ option.display_name }}</span>
-                            </button>
-                        </form>
-                        {% endfor %}
+                <div class="topbar-display-controls" aria-label="Display preferences">
+                    <div class="theme-toggle-wrap">
+                        <input class="theme-toggle-input" id="theme-toggle" type="checkbox" role="switch" aria-label="{{ t('nav.theme') }}" />
+                        <label class="theme-toggle tdnn" for="theme-toggle" aria-hidden="true">
+                            <span class="theme-toggle-knob moon"></span>
+                        </label>
                     </div>
-                </details>
+                    <details class="topbar-language-menu">
+                        <summary class="topbar-language-control" aria-label="{{ t('nav.language') }}" title="{{ t('nav.language') }}">
+                            <span class="topbar-language-icon" aria-hidden="true"><i class="fa-solid fa-globe"></i></span>
+                            <span class="topbar-language-code">{{ lang.code }}</span>
+                            <span class="topbar-language-caret" aria-hidden="true"><i class="fa-solid fa-chevron-down"></i></span>
+                        </summary>
+                        <div class="topbar-language-dropdown">
+                            {% for option in language_options %}
+                            <form action="/preferences/language" method="post" class="inline-form">
+                                <button
+                                    class="topbar-language-option{% if option.code == lang.code %} active{% endif %}"
+                                    type="submit"
+                                    name="language_code"
+                                    value="{{ option.code }}"
+                                    {% if option.code == lang.code %}disabled{% endif %}
+                                >
+                                    <span class="topbar-language-option-code">{{ option.code }}</span>
+                                    <span class="topbar-language-option-name">{{ option.display_name }}</span>
+                                </button>
+                            </form>
+                            {% endfor %}
+                        </div>
+                    </details>
+                </div>
                 {% if user %}
                 <span class="user-summary"><i class="fa-solid fa-user"></i> {{ user.email }}</span>
                 <form action="/logout" method="post">
@@ -71,9 +76,11 @@
                 {% endif %}
             </nav>
         </header>
+
         <div class="app-layout">
             {% if user %}
-            <aside class="side-menu" aria-label="Primary navigation">
+            <button class="side-menu-backdrop" type="button" hidden data-side-menu-backdrop aria-label="Close navigation menu"></button>
+            <aside id="primary-side-menu" class="side-menu" aria-label="Primary navigation">
                 {% if user.role == 'admin' %}
                 <a class="side-menu-link {% if active_page == 'dashboard' %}active{% endif %}" href="/dashboard"><i class="fa-solid fa-chart-line"></i> {{ t('nav.dashboard') }}</a>
                 <a class="side-menu-link {% if active_page == 'companies' %}active{% endif %}" href="/admin/companies"><i class="fa-solid fa-building"></i> {{ t('nav.companies') }}</a>
@@ -84,7 +91,7 @@
                 {% else %}
                 <details class="side-menu-group">
                 {% endif %}
-                    <summary class="side-menu-link {% if active_page == 'settings' %}active{% endif %}"><i class="fa-solid fa-gear"></i> Settings</summary>
+                    <summary class="side-menu-link {% if active_page == 'settings' %}active{% endif %}"><i class="fa-solid fa-gear"></i> {{ t('nav.settings') if t('nav.settings') != 'nav.settings' else 'Settings' }}</summary>
                     <div class="side-menu-submenu">
                         <a class="side-menu-sublink {% if active_settings == 'microsoft_365' %}active{% endif %}" href="/admin/settings/microsoft-365">{{ t('nav.microsoft_365_integration') }}</a>
                         <a class="side-menu-sublink {% if active_settings == 'email_settings' %}active{% endif %}" href="/admin/settings/email">{{ t('nav.email_settings') }}</a>
@@ -98,6 +105,7 @@
                 {% endif %}
             </aside>
             {% endif %}
+
             <main class="shell">
                 {% if toast %}
                 <div class="alert alert-success">{{ t(toast) }}</div>

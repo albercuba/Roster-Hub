@@ -1,12 +1,61 @@
-{% extends 'base.html' %}
-{% block content %}
-<div class="panel auth-panel">
-    <h1>{{ t('auth.title') }}</h1>
-    <p class="muted">{{ t('auth.subtitle') }}</p>
-    <form action="/login" method="post" class="stack-form">
-        <label>{{ t('auth.email') }}<input type="email" name="email" value="{{ entered_email or '' }}" required /></label>
-        <label>{{ t('auth.password') }}<input type="password" name="password" required /></label>
-        <button class="button" type="submit">{{ t('auth.login') }}</button>
-    </form>
-</div>
-{% endblock %}
+<!doctype html>
+<html lang="{{ lang.code|lower }}">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{{ t('auth.title') }} · {{ t('app.name') }}</title>
+        <script>
+            (() => {
+                const storedTheme = window.localStorage.getItem('roster-hub-theme');
+                const preferredDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const theme = storedTheme === 'dark' || storedTheme === 'light'
+                    ? storedTheme
+                    : (preferredDark ? 'dark' : 'light');
+                document.documentElement.dataset.theme = theme;
+            })();
+        </script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+        <link rel="stylesheet" href="/static/style.css" />
+    </head>
+    <body class="login">
+        <div class="login-theme-toggle-wrap theme-toggle-wrap">
+            <input class="theme-toggle-input" id="theme-toggle" type="checkbox" role="switch" aria-label="{{ t('nav.theme') }}" />
+            <label class="theme-toggle tdnn" for="theme-toggle" aria-hidden="true">
+                <span class="theme-toggle-knob moon"></span>
+            </label>
+        </div>
+        <section class="card">
+            <h1>
+                {% if brand_logo_url %}
+                <img class="login-brand-logo" src="{{ brand_logo_url }}" alt="{{ t('app.name') }} logo" />
+                {% else %}
+                <i class="fa-solid fa-users-line brand-mark"></i> {{ t('app.name') }}
+                {% endif %}
+            </h1>
+            <p class="muted">{{ t('auth.subtitle') }}</p>
+            {% if toast %}
+            <div class="alert alert-success">{{ t(toast) }}</div>
+            {% endif %}
+            {% if error_key %}
+            <div class="alert alert-danger">{{ t(error_key) }}</div>
+            {% endif %}
+            {% if error_message %}
+            <div class="alert alert-danger">{{ error_message }}</div>
+            {% endif %}
+            <form action="/login" method="post" class="settings-form narrow-form">
+                <label class="form-row">{{ t('auth.email') }}
+                    <input name="email" type="email" value="{{ entered_email or '' }}" required autofocus />
+                </label>
+                <label class="form-row">{{ t('auth.password') }}
+                    <input name="password" type="password" required />
+                </label>
+                <div class="login-actions">
+                    <button class="button" type="submit">
+                        <i class="fa-solid fa-right-to-bracket"></i> {{ t('auth.login') }}
+                    </button>
+                </div>
+            </form>
+        </section>
+        <script src="/static/app.js"></script>
+    </body>
+</html>
