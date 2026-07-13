@@ -18,12 +18,9 @@
     </head>
     <body>
         <header class="topbar">
-            <div class="brand">
+            <div class="brand" title="{{ t('app.tagline') }}">
                 <span class="brand-mark"><i class="fa-solid fa-users-line"></i></span>
-                <div>
-                    <div class="brand-title">{{ t('app.name') }}</div>
-                    <div class="brand-subtitle">{{ t('app.tagline') }}</div>
-                </div>
+                {{ t('app.name') }}
             </div>
             <nav class="nav">
                 <form action="/preferences/theme" method="post" class="inline-form topbar-select-form">
