@@ -192,15 +192,18 @@ a {
     min-width: 0;
     padding-left: 0.75rem;
     padding-right: 0.75rem;
-    display: grid;
-    gap: 1rem;
+}
+.shell > section {
+    margin-left: 0;
+    margin-right: 0;
 }
 .panel {
     background: var(--panel);
     border: 1px solid var(--line);
-    border-radius: 1rem;
+    border-radius: var(--radius);
     box-shadow: var(--shadow);
-    padding: 1rem;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
 }
 .hero-grid {
     display: grid;
@@ -330,8 +333,11 @@ button {
     color: var(--muted);
 }
 .auth-panel {
-    max-width: 420px;
+    width: min(420px, 100%);
     margin: 3rem auto;
+}
+.auth-panel h1 {
+    text-align: center;
 }
 .code-block {
     white-space: pre-wrap;
