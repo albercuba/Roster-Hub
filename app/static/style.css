@@ -184,8 +184,7 @@ a {
     padding-left: 0.7rem;
 }
 .side-menu-sublink {
-    font-size: 0.9rem;
-    padding: 0.65rem 0.8rem;
+    font-size: inherit;
 }
 .shell {
     width: 100%;
