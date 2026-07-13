@@ -126,6 +126,58 @@ a {
 .topbar-theme-button[data-current-theme="dark"] .theme-icon-sun {
     display: inline-flex;
 }
+.topbar-language-control {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 0;
+    padding: 0.45rem 2rem 0.45rem 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel-strong);
+    color: var(--muted);
+    cursor: pointer;
+    transition: border-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+}
+.topbar-language-control:hover,
+.topbar-language-control:focus-within {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+.topbar-language-icon,
+.topbar-language-caret {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.topbar-language-value {
+    min-width: 2ch;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+.topbar-language-caret {
+    position: absolute;
+    right: 0.7rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    pointer-events: none;
+}
+.topbar-language-select {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+.topbar-language-select option {
+    color: var(--text);
+    background: var(--panel-strong);
+}
 .topbar-select {
     min-width: 120px;
     padding: 0.6rem 0.75rem;
