@@ -5,6 +5,7 @@
     --bg-accent: #eef6ff;
     --panel: rgba(255, 255, 255, 0.92);
     --panel-strong: #ffffff;
+    --panel-elevated: rgba(255, 255, 255, 0.9);
     --text: #142033;
     --muted: #69788d;
     --line: #dce6f3;
@@ -13,6 +14,7 @@
     --danger: #d64545;
     --ok: #1f9d63;
     --radius: 14px;
+    --sidebar-width: 220px;
     --shadow: 0 18px 48px rgba(20, 32, 51, 0.08);
 }
 
@@ -21,6 +23,7 @@
     --bg-accent: #17263d;
     --panel: rgba(22, 34, 52, 0.92);
     --panel-strong: #162234;
+    --panel-elevated: rgba(22, 34, 52, 0.9);
     --text: #edf4ff;
     --muted: #98acc7;
     --line: #27354d;
@@ -117,13 +120,17 @@ a {
     align-items: start;
 }
 .side-menu {
-    position: sticky;
-    top: 7.25rem;
+    position: fixed;
+    top: 5.5rem;
+    left: 0.75rem;
+    width: var(--sidebar-width);
+    max-height: calc(100vh - 4.65rem);
+    overflow: auto;
     display: grid;
-    gap: 0.4rem;
-    margin-top: 2rem;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.9);
+    gap: 0.25rem;
+    margin-top: 0;
+    padding: 0.5rem;
+    background: var(--panel-elevated);
     border: 1px solid var(--line);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
