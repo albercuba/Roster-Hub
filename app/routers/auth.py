@@ -77,10 +77,3 @@ def set_language(
         db.commit()
     return response
 
-
-@router.post("/preferences/theme")
-def set_theme(request: Request, theme: str = Form(...)):
-    redirect_to = request.headers.get("referer") or "/"
-    response = RedirectResponse(redirect_to, status_code=303)
-    response.set_cookie("roster_hub_theme", theme, httponly=False, samesite="lax", secure=settings.session_secure, max_age=31536000)
-    return response

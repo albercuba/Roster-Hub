@@ -33,7 +33,6 @@ def render_template(request: Request, template_name: str, context: dict, *, user
     payload.setdefault("user", user)
     payload.setdefault("lang", language)
     payload.setdefault("language_options", list_languages())
-    payload.setdefault("theme", request.cookies.get("roster_hub_theme", "system"))
     payload.setdefault("active_page", None)
     payload.setdefault("toast", None)
     payload.setdefault("app_name", settings.app_name)
