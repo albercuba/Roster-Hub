@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     allowed_hosts: str = "localhost,127.0.0.1,testserver"
     default_language: str = "EN"
     language_storage_dir: str = "/var/lib/roster-hub/languages"
+    branding_upload_dir: str = "/var/lib/roster-hub/branding"
+    branding_logo_max_bytes: int = 1_000_000
     smtp_enabled: bool = False
     smtp_host: str | None = None
     smtp_port: int = 587

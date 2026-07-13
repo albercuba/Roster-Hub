@@ -3,6 +3,35 @@
 <section class="panel">
     <h1>{{ t('branding.title') }}</h1>
     <p class="muted">{{ t('branding.summary') }}</p>
-    <div class="alert alert-success">{{ t('branding.status') }}</div>
+    <form action="/admin/settings/branding" method="post" enctype="multipart/form-data" class="stack-form">
+        <div class="stack-form">
+            <span>{{ t('branding.upload_logo') }}</span>
+            <div class="file-upload-control">
+                <input class="file-upload-input" id="branding_logo_file" type="file" name="branding_logo_file" accept="image/png,image/jpeg,image/webp" />
+                <label class="button button-secondary" for="branding_logo_file">{{ t('branding.choose_logo_file') }}</label>
+                <span class="file-upload-name" data-file-upload-name>{{ t('branding.no_file_selected') }}</span>
+            </div>
+        </div>
+        <label>{{ t('branding.fallback_logo_url') }}<input type="url" name="branding_logo_url" value="{{ settings_record.branding_logo_url if settings_record else '' }}" placeholder="https://example.com/logo.png" /></label>
+        <p class="muted">{{ t('branding.help') }}</p>
+        <label class="checkbox-row"><input type="checkbox" name="remove_logo" value="true" /> {{ t('branding.remove_logo') }}</label>
+        <div class="form-actions"><button class="button" type="submit">{{ t('common.save') }}</button></div>
+    </form>
+    {% if brand_logo_url %}
+    <div class="branding-preview panel-subsection">
+        <h2>{{ t('branding.preview') }}</h2>
+        <img src="{{ brand_logo_url }}" alt="{{ t('branding.preview') }}" />
+    </div>
+    {% endif %}
 </section>
+<script>
+    (() => {
+        const input = document.getElementById('branding_logo_file');
+        const fileName = document.querySelector('[data-file-upload-name]');
+        if (!input || !fileName) return;
+        input.addEventListener('change', () => {
+            fileName.textContent = input.files && input.files.length ? input.files[0].name : {{ t('branding.no_file_selected')|tojson }};
+        });
+    })();
+</script>
 {% endblock %}

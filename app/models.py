@@ -89,6 +89,24 @@ class EmailSettings(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc, nullable=False)
 
 
+class IntegrationSettings(Base):
+    __tablename__ = "integration_settings"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, default=1)
+    microsoft_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    microsoft_tenant_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    microsoft_client_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    microsoft_client_secret: Mapped[str | None] = mapped_column(Text, nullable=True)
+    microsoft_audience: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    microsoft_authority: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    microsoft_admin_group_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    microsoft_admin_group_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    microsoft_user_group_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    microsoft_user_group_id: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    branding_logo_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc, nullable=False)
+
+
 class CompanyVariable(Base):
     __tablename__ = "company_variables"
 

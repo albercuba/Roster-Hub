@@ -3,9 +3,10 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
+from .branding import uploaded_logo_path
 from .config import get_settings
 from .routers import admin, auth, client, dashboard
 from .services.bootstrap import bootstrap
@@ -43,6 +44,19 @@ async def http_exception_handler(request: Request, exc: HTTPException):
         response.delete_cookie(settings.session_cookie_name)
         return response
     return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail or "Error"})
+
+
+@app.get("/branding/logo")
+def branding_logo():
+    logo_path = uploaded_logo_path(settings.branding_upload_dir)
+    if not logo_path:
+        raise HTTPException(status_code=404, detail="Logo not found")
+    media_type = {
+        ".png": "image/png",
+        ".jpg": "image/jpeg",
+        ".webp": "image/webp",
+    }.get(logo_path.suffix.lower(), "application/octet-stream")
+    return FileResponse(logo_path, media_type=media_type)
 
 
 app.include_router(auth.router)

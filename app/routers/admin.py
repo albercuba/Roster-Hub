@@ -8,15 +8,18 @@ from fastapi.responses import FileResponse, RedirectResponse, Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
+from ..branding import BrandingError, clear_uploaded_logo, save_uploaded_logo, validate_branding_upload
+from ..config import get_settings
 from ..database import get_db
 from ..deps import require_admin
-from ..models import Company, CompanyVariable, EmailSettings, Request as RequestModel, RequestVariableValue, ROLE_CLIENT_CONTACT, User
+from ..models import Company, CompanyVariable, EmailSettings, IntegrationSettings, Request as RequestModel, RequestVariableValue, ROLE_CLIENT_CONTACT, User, now_utc
 from ..security import hash_password
 from ..services.audit_service import write_audit_log
 from ..services.language_service import LanguageValidationError, get_language, list_languages, save_uploaded_language, template_language_payload
 from ..web import render_template
 
 router = APIRouter(prefix="/admin")
+settings = get_settings()
 
 
 def _redirect(path: str, toast: str | None = None) -> RedirectResponse:
@@ -43,6 +46,15 @@ def _user_or_404(db: Session, user_id: str) -> User:
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+
+def _integration_settings(db: Session) -> IntegrationSettings:
+    record = db.get(IntegrationSettings, 1)
+    if not record:
+        record = IntegrationSettings(id=1)
+        db.add(record)
+        db.flush()
+    return record
 
 
 @router.get("/companies")
@@ -280,8 +292,41 @@ def update_request_status(
 
 
 @router.get("/settings/microsoft-365")
-def microsoft_365_settings_page(request: Request, user: User = Depends(require_admin)):
-    return render_template(request, "admin_microsoft_365_settings.html", {"user": user, "active_page": "settings", "active_settings": "microsoft_365", "toast": request.query_params.get("toast")}, user=user)
+def microsoft_365_settings_page(request: Request, db: Session = Depends(get_db), user: User = Depends(require_admin)):
+    return render_template(request, "admin_microsoft_365_settings.html", {"user": user, "active_page": "settings", "active_settings": "microsoft_365", "settings_record": _integration_settings(db), "toast": request.query_params.get("toast")}, user=user, db=db)
+
+
+@router.post("/settings/microsoft-365")
+def update_microsoft_365_settings(
+    microsoft_enabled: bool = Form(False),
+    microsoft_tenant_id: str = Form(""),
+    microsoft_client_id: str = Form(""),
+    microsoft_client_secret: str = Form(""),
+    microsoft_audience: str = Form(""),
+    microsoft_authority: str = Form(""),
+    microsoft_admin_group_name: str = Form(""),
+    microsoft_admin_group_id: str = Form(""),
+    microsoft_user_group_name: str = Form(""),
+    microsoft_user_group_id: str = Form(""),
+    db: Session = Depends(get_db),
+    user: User = Depends(require_admin),
+):
+    record = _integration_settings(db)
+    record.microsoft_enabled = microsoft_enabled
+    record.microsoft_tenant_id = microsoft_tenant_id.strip() or None
+    record.microsoft_client_id = microsoft_client_id.strip() or None
+    if microsoft_client_secret.strip():
+        record.microsoft_client_secret = microsoft_client_secret.strip()
+    record.microsoft_audience = microsoft_audience.strip() or None
+    record.microsoft_authority = microsoft_authority.strip() or None
+    record.microsoft_admin_group_name = microsoft_admin_group_name.strip() or None
+    record.microsoft_admin_group_id = microsoft_admin_group_id.strip() or None
+    record.microsoft_user_group_name = microsoft_user_group_name.strip() or None
+    record.microsoft_user_group_id = microsoft_user_group_id.strip() or None
+    record.updated_at = now_utc()
+    write_audit_log(db, user=user, action="microsoft_365_settings.update", target_type="integration_settings", target_id="1")
+    db.commit()
+    return _redirect("/admin/settings/microsoft-365", "m365.saved")
 
 
 @router.get("/settings/email")
@@ -317,14 +362,43 @@ def update_email_settings(
     record.smtp_from_name = smtp_from_name.strip() or None
     record.smtp_use_tls = smtp_use_tls
     record.smtp_use_ssl = smtp_use_ssl
+    record.updated_at = now_utc()
     write_audit_log(db, user=user, action="email_settings.update", target_type="email_settings", target_id="1")
     db.commit()
     return _redirect("/admin/settings/email", "email.saved")
 
 
 @router.get("/settings/branding")
-def branding_settings_page(request: Request, user: User = Depends(require_admin)):
-    return render_template(request, "admin_branding.html", {"user": user, "active_page": "settings", "active_settings": "branding", "toast": request.query_params.get("toast")}, user=user)
+def branding_settings_page(request: Request, db: Session = Depends(get_db), user: User = Depends(require_admin)):
+    return render_template(request, "admin_branding.html", {"user": user, "active_page": "settings", "active_settings": "branding", "settings_record": _integration_settings(db), "toast": request.query_params.get("toast")}, user=user, db=db)
+
+
+@router.post("/settings/branding")
+def update_branding_settings(
+    request: Request,
+    branding_logo_url: str = Form(""),
+    remove_logo: bool = Form(False),
+    branding_logo_file: UploadFile | None = File(None),
+    db: Session = Depends(get_db),
+    user: User = Depends(require_admin),
+):
+    record = _integration_settings(db)
+    try:
+        if remove_logo:
+            clear_uploaded_logo(settings.branding_upload_dir)
+            record.branding_logo_url = None
+        else:
+            record.branding_logo_url = branding_logo_url.strip() or None
+            if branding_logo_file and branding_logo_file.filename:
+                content = branding_logo_file.file.read()
+                extension, _ = validate_branding_upload(branding_logo_file, content, settings.branding_logo_max_bytes)
+                save_uploaded_logo(settings.branding_upload_dir, extension, content)
+        record.updated_at = now_utc()
+    except BrandingError as exc:
+        return render_template(request, "admin_branding.html", {"user": user, "active_page": "settings", "active_settings": "branding", "settings_record": record, "error_message": str(exc)}, user=user, db=db, status_code=400)
+    write_audit_log(db, user=user, action="branding_settings.update", target_type="integration_settings", target_id="1")
+    db.commit()
+    return _redirect("/admin/settings/branding", "branding.saved")
 
 
 @router.get("/languages")

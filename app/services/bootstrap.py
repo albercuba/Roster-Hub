@@ -4,7 +4,7 @@ from sqlalchemy import select
 
 from ..config import get_settings
 from ..database import Base, engine, SessionLocal
-from ..models import EmailSettings, User, ROLE_ADMIN
+from ..models import EmailSettings, IntegrationSettings, User, ROLE_ADMIN
 from ..security import hash_password
 from .language_service import ensure_language_storage_seeded
 
@@ -40,4 +40,6 @@ def bootstrap() -> None:
                     smtp_use_ssl=settings.smtp_use_ssl,
                 )
             )
+        if not db.get(IntegrationSettings, 1):
+            db.add(IntegrationSettings(id=1))
         db.commit()
