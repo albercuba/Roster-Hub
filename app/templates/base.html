@@ -23,11 +23,22 @@
                 {{ t('app.name') }}
             </div>
             <nav class="nav">
-                <form action="/preferences/theme" method="post" class="inline-form topbar-select-form">
-                    <select name="theme" class="select topbar-select" onchange="this.form.submit()" aria-label="{{ t('nav.theme') }}">
-                        <option value="light" {% if theme == 'light' %}selected{% endif %}>{{ t('theme.light') }}</option>
-                        <option value="dark" {% if theme == 'dark' %}selected{% endif %}>{{ t('theme.dark') }}</option>
-                    </select>
+                <form action="/preferences/theme" method="post" class="inline-form">
+                    <input type="hidden" name="theme" value="light" data-theme-input />
+                    <button
+                        class="theme-toggle"
+                        type="submit"
+                        aria-label="{{ t('nav.theme') }}"
+                        title="{{ t('nav.theme') }}"
+                        data-theme-toggle
+                    >
+                        <span class="theme-toggle-track" aria-hidden="true">
+                            <span class="theme-toggle-thumb">
+                                <i class="fa-solid fa-sun theme-toggle-icon theme-toggle-icon-sun"></i>
+                                <i class="fa-solid fa-moon theme-toggle-icon theme-toggle-icon-moon"></i>
+                            </span>
+                        </span>
+                    </button>
                 </form>
                 <form action="/preferences/language" method="post" class="inline-form topbar-select-form">
                     <select name="language_code" class="select topbar-select" onchange="this.form.submit()" aria-label="{{ t('nav.language') }}">
